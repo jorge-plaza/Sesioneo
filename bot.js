@@ -1,12 +1,14 @@
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const youtubedl = require('youtube-dl');
+const config = require('./config');
+const { info } = require('console');
 
 // replace the value below with the Telegram token you receive from @BotFather
-const token = '1366787295:AAEusoSsRXy8hXoprVZYCXSkohGJWUEyucE';
+//const token = '1366787295:AAEusoSsRXy8hXoprVZYCXSkohGJWUEyucE';
 
 // Create a bot that uses 'polling' to fetch new updates
-const bot = new TelegramBot(token, {polling: true});
+const bot = new TelegramBot(config.bot.token, {polling: true});
 
 // Matches "/echo [whatever]"
 bot.onText(/\/echo (.+)/, (msg, match) => {
@@ -36,16 +38,16 @@ bot.onText(/\/link (.+)/, (msg, link) => {
   // Optional arguments passed to youtube-dl.
     ['--format=18'],
     // Additional options can be given for calling `child_process.execFile()`.
-    { cwd: __dirname })
+    { cwd: __dirname });
     
     // Will be called when the download starts.
     video.on('info', function(info) {
         console.log('Download started');
         console.log('filename: ' + info._filename);
         console.log('size: ' + info.size);
-    })
+    });
     
-    video.pipe(fs.createWriteStream('myvideo.mp4'));
+    video.pipe(fs.createWriteStream('/home/plaza/sesioneoMusic/filename.mp4'));
     bot.sendMessage(chatId,"Sesion guardada");
 });
 
