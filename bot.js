@@ -1,5 +1,6 @@
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
+const path = require('path');
 const youtubedl = require('youtube-dl');
 const config = require('./config');
 const { info } = require('console');
@@ -46,11 +47,46 @@ bot.onText(/\/link (.+)/, (msg, link) => {
         console.log('filename: ' + info._filename);
         console.log('size: ' + info.size);
     });
-    
-    video.pipe(fs.createWriteStream('/home/plaza/sesioneoMusic/filename.mp4'));
+    console.log(video);
+    video.pipe(fs.createWriteStream(`/home/plaza/sesioneoMusic/filename.mp4`));
     bot.sendMessage(chatId,"Sesion guardada");
 });
 
+function playlist(url) {
+
+  'use strict'
+  const video = youtubedl(url);
+
+  video.on('error', function error(err) {
+    console.log('error 2:', err)
+    bot.sendMessage(chatId, `An error has ocurred: ${err}`);
+  })
+
+  let size = 0
+  video.on('info', function(info) {
+    size = info.size
+    let output = path.join(config.storage.direcotry,'/', info._filename);
+    video.pipe(fs.createWriteStream(output));
+  })
+
+  let pos = 0
+  video.on('data', function data(chunk) {
+    pos += chunk.length
+    // `size` should not be 0 here.
+    if (size) {
+      let percent = (pos / size * 100).toFixed(2);
+      process.stdout.cursorTo(0)
+      process.stdout.clearLine(1)
+      process.stdout.write(percent + '%')
+    }
+  })
+
+  video.on('next', playlist);
+}
+
+bot.onText(/\/playlist (.+)/, (msg, link) => {
+  playlist(link[1]);
+});
 // Listen for any kind of message. There are different kinds of
 // messages.
 bot.on('message', (msg) => {
