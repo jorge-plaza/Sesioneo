@@ -19,7 +19,12 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 
   const chatId = msg.chat.id;
   const resp = match[1]; // the captured "whatever"
-
+  const url = "https://www.youtube.com/watch?v=PzL90bAAcX4";
+  youtubedl.exec(url, ['-x', '--audio-format', 'mp3'], {}, function(err, output) {
+    if (err) throw err
+  
+    console.log(output.join('\n'))
+  });
   // send back the matched "whatever" to the chat
   bot.sendMessage(chatId, resp);
 });
@@ -35,39 +40,40 @@ bot.onText(/\/link (.+)/, (msg, link) => {
     }); */
     //const resp = match[1]; //youtube link
     
-    const video = youtubedl(link[1],
-  // Optional arguments passed to youtube-dl.
-    ['--format=18'],
+    const video = youtubedl(link[1],['-x', '--audio-format', 'mp3', '--format=18','--audio-quality=0'],    
     // Additional options can be given for calling `child_process.execFile()`.
     { cwd: __dirname });
     
-    // Will be called when the download starts.
-    video.on('info', function(info) {
-        console.log('Download started');
-        console.log('filename: ' + info._filename);
-        console.log('size: ' + info.size);
+    video.on('error', function error(err) {
+      console.log('error 2:', err)
+      bot.sendMessage(chatId, `An error has ocurred: ${err}`);
     });
-    console.log(video);
-    video.pipe(fs.createWriteStream(`/home/plaza/sesioneoMusic/filename.mp4`));
-    bot.sendMessage(chatId,"Sesion guardada");
+
+    // Will be called when the download starts.
+    let size = 0
+    video.on('info', function(info) {
+      size = info.size
+      let output = path.join(config.storage.direcotry,'/', info._filename);
+      video.pipe(fs.createWriteStream(output));
+    });
 });
 
 function playlist(url) {
 
   'use strict'
-  const video = youtubedl(url);
+  const video = youtubedl(url,['-x', '--audio-format', 'mp3', '--format=18', '--audio-quality=0']);
 
   video.on('error', function error(err) {
     console.log('error 2:', err)
     bot.sendMessage(chatId, `An error has ocurred: ${err}`);
-  })
+  });
 
   let size = 0
   video.on('info', function(info) {
     size = info.size
     let output = path.join(config.storage.direcotry,'/', info._filename);
     video.pipe(fs.createWriteStream(output));
-  })
+  });
 
   let pos = 0
   video.on('data', function data(chunk) {
