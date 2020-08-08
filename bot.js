@@ -34,30 +34,7 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
  */
 bot.onText(/\/link (.+)/, (msg, link) => {
     const chatId = msg.chat.id;
-    //const urlRegex = new RegExp("https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)");
-    /* bot.onText(urlRegex, (msg, link) => {
-        bot.sendMessage(chatId, "La url coincide");
-    }); */
-    //const resp = match[1]; //youtube link
     
-    /* const video = youtubedl(link[1],['-x', '--audio-format', 'mp3', '--format=18','--audio-quality=0'],    
-    // Additional options can be given for calling `child_process.execFile()`.
-    { cwd: __dirname });
-
-    
-    video.on('error', function error(err) {
-      console.log('error 2:', err)
-      bot.sendMessage(chatId, `An error has ocurred: ${err}`);
-    });
-
-    // Will be called when the download starts.
-    let size = 0
-    video.on('info', function(info) {
-      size = info.size
-      let output = path.join(config.storage.direcotry,'/', info._filename);
-      video.pipe(fs.createWriteStream(output));
-    }); */
-
     youtubedl.exec(link[1],
       ['-x', '--audio-format', 'mp3', '--audio-quality=0'],
       {cwd: config.storage.direcotry},
