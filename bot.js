@@ -40,9 +40,10 @@ bot.onText(/\/link (.+)/, (msg, link) => {
     }); */
     //const resp = match[1]; //youtube link
     
-    const video = youtubedl(link[1],['-x', '--audio-format', 'mp3', '--format=18','--audio-quality=0'],    
+    /* const video = youtubedl(link[1],['-x', '--audio-format', 'mp3', '--format=18','--audio-quality=0'],    
     // Additional options can be given for calling `child_process.execFile()`.
     { cwd: __dirname });
+
     
     video.on('error', function error(err) {
       console.log('error 2:', err)
@@ -55,6 +56,15 @@ bot.onText(/\/link (.+)/, (msg, link) => {
       size = info.size
       let output = path.join(config.storage.direcotry,'/', info._filename);
       video.pipe(fs.createWriteStream(output));
+    }); */
+
+    youtubedl.exec(link[1],
+      ['-x', '--audio-format', 'mp3', '--audio-quality=0'],
+      {cwd: config.storage.direcotry},
+      function(err, output) {
+        if (err) throw err
+        console.log(output.join('\n'));
+        bot.sendMessage(chatId,'Download completed');
     });
 });
 
