@@ -32,22 +32,38 @@ bot.onText(/\/echo (.+)/, (msg, match) => {
 /**
  * Saves a music session providing a youtube link
  */
-bot.onText(/\/link (.+)/, (msg, link) => {
+bot.onText(/\/link/, (msg, link) => {
+    'use strict'
     const chatId = msg.chat.id;
-    
-    youtubedl.exec(link[1],
-      ['-x', '--audio-format', 'mp3', '--audio-quality=0'],
-      {cwd: config.storage.direcotry},
-      function(err, output) {
-        if (err) throw err
-        console.log(output.join('\n'));
-        bot.sendMessage(chatId,'Download completed');
+    bot.sendMessage(chatId, 'Send link please.');
+    bot.on('message', (link) => {
+      if (link.entities[0].type === 'url'){
+        youtubedl.exec(link.text,
+          ['-x', '--audio-format', 'mp3', '--audio-quality=0'],
+          {cwd: config.storage.direcotry},
+          function(err, output) {
+            if (err) throw err
+            console.log(output.join('\n'));
+            bot.sendMessage(chatId,'Download completed');
+        });
+      }else{
+        bot.sendMessage(chatId, 'This is not a link.');
+      } 
     });
 });
 
 function playlist(url) {
 
   'use strict'
+  const audio = youtubedl.exec(url,
+    ['-x', '--audio-format', 'mp3', '--audio-quality=0'],
+    {cwd: config.storage.direcotry},
+    function(err, output) {
+      if (err) throw err
+      console.log(output.join('\n'));
+      bot.sendMessage(chatId,'Download completed');
+  });
+  audio.on('next', playlist);
   const video = youtubedl(url,['-x', '--audio-format', 'mp3', '--format=18', '--audio-quality=0']);
 
   video.on('error', function error(err) {
