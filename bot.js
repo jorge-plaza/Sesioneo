@@ -38,14 +38,19 @@ bot.onText(/\/link/, (msg, link) => {
     bot.sendMessage(chatId, 'Send link please.');
     bot.on('message', (link) => {
       if (link.entities[0].type === 'url'){
+        bot.sendChatAction(chatId,"upload_video");
         youtubedl.exec(link.text,
           ['-x', '--audio-format', 'mp3', '--audio-quality=0'],
           {cwd: config.storage.direcotry},
           function(err, output) {
             if (err) throw err
             console.log(output.join('\n'));
-            bot.sendMessage(chatId,'Download completed');
         });
+        youtubedl.getThumbs(link.text, {cwd: config.storage.direcotry}, function(err, files) {
+          if (err) throw err
+          console.log('thumbnail file downloaded:', files)
+        });
+        bot.sendMessage(chatId,'Download completed');
       }else{
         bot.sendMessage(chatId, 'This is not a link.');
       } 
