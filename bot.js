@@ -40,15 +40,11 @@ bot.onText(/\/link/, (msg, link) => {
       if (link.entities[0].type === 'url'){
         bot.sendChatAction(chatId,"upload_video");
         youtubedl.exec(link.text,
-          ['-x', '--audio-format', 'mp3', '--audio-quality=0'],
+          ['-x', '--audio-format', 'mp3', '--audio-quality=0', '-o', '%(title)s.%(ext)s'],
           {cwd: config.storage.direcotry},
           function(err, output) {
             if (err) throw err
             console.log(output.join('\n'));
-        });
-        youtubedl.getThumbs(link.text, {cwd: config.storage.direcotry}, function(err, files) {
-          if (err) throw err
-          console.log('thumbnail file downloaded:', files)
         });
         bot.sendMessage(chatId,'Download completed');
       }else{
