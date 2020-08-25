@@ -66,11 +66,42 @@ bot.on('message', (msg) => {
       function(err, output) {
         if (err) throw err
         console.log(output.join('\n'));
-        console.log(output);
-        bot.sendMessage(chatId,'Download completed');
+        //bot.sendMessage(chatId,'Download completed');
+        successMessaje(chatId,url);
     });
   }
 });
+
+function successMessaje(chatId,url){
+  youtubedl.getInfo(url, [], function(err, info) {
+    if (err) throw err
+    let msg = `
+      🎵${info.title}\n
+🕔${info._duration_hms}  💾${formatBytes(info.filesize)}\n
+🤠Download completed successfully🤠`;
+    bot.sendMessage(chatId,msg);
+  });
+}
+
+function formatBytes(bytes, decimals = 2) {
+  if (bytes === 0) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+function formatTime(timestamp){
+  const hours = Math.floor(timestamp / 60 / 60);
+  const minutes = Math.floor(timestamp / 60) - (hours * 60);
+  const seconds = timestamp % 60;
+  const formatted = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+  return formatted;
+}
 
 function playlist(url) {
 
