@@ -4,6 +4,7 @@ const path = require('path');
 const youtubedl = require('youtube-dl');
 const config = require('./config');
 const { info } = require('console');
+const { url } = require('inspector');
 
 // replace the value below with the Telegram token you receive from @BotFather
 //const token = '1366787295:AAEusoSsRXy8hXoprVZYCXSkohGJWUEyucE';
@@ -45,12 +46,30 @@ bot.onText(/\/link/, (msg, link) => {
           function(err, output) {
             if (err) throw err
             console.log(output.join('\n'));
+            bot.sendMessage(chatId,'Download completed');
         });
-        bot.sendMessage(chatId,'Download completed');
       }else{
         bot.sendMessage(chatId, 'This is not a link.');
       } 
     });
+});
+
+bot.on('message', (msg) => {
+  'use strict'
+  const chatId = msg.chat.id;
+  if (msg.entities[0].type === 'url') {
+    const url = msg.text;
+    bot.sendChatAction(chatId,"upload_video");
+    youtubedl.exec(url,
+      ['-x', '--audio-format', 'mp3', '--audio-quality=0', '-o', '%(title)s.%(ext)s'],
+      {cwd: config.storage.direcotry},
+      function(err, output) {
+        if (err) throw err
+        console.log(output.join('\n'));
+        console.log(output);
+        bot.sendMessage(chatId,'Download completed');
+    });
+  }
 });
 
 function playlist(url) {
