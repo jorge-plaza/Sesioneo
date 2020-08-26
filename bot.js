@@ -48,7 +48,6 @@ bot.on('message', (msg) => {
       function(err, output) {
         if (err) throw err
         console.log(output.join('\n'));
-        //bot.sendMessage(chatId,'Download completed');
         successMessaje(chatId,url);
     });
   }
@@ -75,45 +74,4 @@ function formatBytes(bytes, decimals = 2) {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-}
-
-function playlist(url) {
-
-  'use strict'
-  const audio = youtubedl.exec(url,
-    ['-x', '--audio-format', 'mp3', '--audio-quality=0'],
-    {cwd: config.storage.direcotry},
-    function(err, output) {
-      if (err) throw err
-      console.log(output.join('\n'));
-      bot.sendMessage(chatId,'Download completed');
-  });
-  audio.on('next', playlist);
-  const video = youtubedl(url,['-x', '--audio-format', 'mp3', '--format=18', '--audio-quality=0']);
-
-  video.on('error', function error(err) {
-    console.log('error 2:', err)
-    bot.sendMessage(chatId, `An error has ocurred: ${err}`);
-  });
-
-  let size = 0
-  video.on('info', function(info) {
-    size = info.size
-    let output = path.join(config.storage.direcotry,'/', info._filename);
-    video.pipe(fs.createWriteStream(output));
-  });
-
-  let pos = 0
-  video.on('data', function data(chunk) {
-    pos += chunk.length
-    // `size` should not be 0 here.
-    if (size) {
-      let percent = (pos / size * 100).toFixed(2);
-      process.stdout.cursorTo(0)
-      process.stdout.clearLine(1)
-      process.stdout.write(percent + '%')
-    }
-  })
-
-  video.on('next', playlist);
 }
