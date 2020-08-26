@@ -143,18 +143,3 @@ function playlist(url) {
 
   video.on('next', playlist);
 }
-
-bot.onText(/\/playlist (.+)/, (msg, link) => {
-  playlist(link[1]);
-});
-
-bot.on('audio', (msg) => {
-    const chatId = msg.chat.id;
-
-    //const audioName = audio.file_id;
-    const audiotTitle = msg.audio.title;
-    bot.sendMessage(chatId, `Nombre del fichero ${audiotTitle}`).catch((error) => {
-        console.log(error.code);  // => 'ETELEGRAM'
-        console.log(error.response.body); // => { ok: false, error_code: 400, description: 'Bad Request: chat not found' }
-      });
-});
