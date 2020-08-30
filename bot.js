@@ -6,9 +6,6 @@ const config = require('./config');
 const { info } = require('console');
 const { url } = require('inspector');
 
-// replace the value below with the Telegram token you receive from @BotFather
-//const token = '1366787295:AAEusoSsRXy8hXoprVZYCXSkohGJWUEyucE';
-
 // Create a bot that uses 'polling' to fetch new updates
 const bot = new TelegramBot(config.bot.token, {polling: true});
 
